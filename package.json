@@ -1,7 +1,7 @@
 {
   "name": "gpt-continuum",
   "version": "0.1.0",
-  "description": "A tiny ChatGPT plugin that sends a configurable follow-up message on a timer.",
+  "description": "A small, human-centered timer for keeping long ChatGPT conversations moving.",
   "type": "module",
   "license": "MIT",
   "bin": {

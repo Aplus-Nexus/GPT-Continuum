@@ -2,9 +2,15 @@
 
 <p align="center"><img src="assets/logo.png" alt="GPT Continuum logo" width="180" /></p>
 
-<p align="center"><strong>Keep ChatGPT moving until the work is done.</strong></p>
+<p align="center"><strong>Keep your GPT from stopping at “at capacity”.</strong></p>
 
-GPT Continuum is a local ChatGPT Plugin / MCP App that sends a configurable follow-up message to the active conversation on a timer. It helps long-running tasks recover from capacity limits, temporary interruptions, or a model stopping early.
+Does GPT keep saying “at capacity” while a long task is stuck, with no automatic retry? GPT Continuum is a local ChatGPT Plugin / MCP App that sends a configurable follow-up message to the active conversation on a timer, so the task can keep moving.
+
+## The problem it solves
+
+During peak periods, long tasks, and code generation, ChatGPT can stop at **at capacity**, pause temporarily, or stop before the work is done. GPT Continuum turns the repeated manual “continue” message into a visible, configurable timer that you can stop at any time.
+
+![GPT Continuum plugin screenshot](assets/screenshot.png)
 
 ## Features
 
