@@ -39,6 +39,10 @@ npx --yes github:JulianRyder01/GPT-Continuum install
 
 本项目使用本地 `stdio` MCP，因此不需要用户部署 HTTPS。公共 ChatGPT Plugin Directory 对本地 MCP 有 Desktop only 和额外审核限制；这也是本项目默认采用 GitHub + 本地 marketplace 的原因。
 
+### 如果显示 “No plugins found”
+
+请完全退出并重新打开 **ChatGPT 桌面端**，再进入 **Plugins → Personal**。不要在 `http://127.0.0.1:8765/gpt-continuum.html` 这个本地预览页里测试发送：预览页没有 ChatGPT 的消息桥接，只用于查看界面。若 Personal 仍为空，请重新执行上面的 `npx` 命令；安装器会更新 `~/.agents/plugins/marketplace.json`。
+
 ## Development
 
 ```bash

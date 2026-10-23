@@ -50,6 +50,10 @@ Start with a 30–60 second interval. Very short intervals can create duplicate 
 
 This project uses local `stdio`, so users do not deploy HTTPS. The public Plugin Directory applies Desktop only and additional review requirements to local MCP plugins.
 
+### If you see “No plugins found”
+
+Fully quit and reopen the **ChatGPT desktop app**, then open **Plugins → Personal** again. Do not test sending from `http://127.0.0.1:8765/gpt-continuum.html`: that local preview has no ChatGPT message bridge and is only for viewing the UI. If Personal is still empty, rerun the `npx` command above; the installer refreshes `~/.agents/plugins/marketplace.json`.
+
 ## Project layout
 
 ```text

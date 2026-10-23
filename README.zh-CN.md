@@ -50,6 +50,10 @@ npm start
 
 本项目使用本地 `stdio` MCP，因此不要求 HTTPS；公共 Plugin Directory 对本地 MCP 有 Desktop only 和额外审核限制。
 
+### 如果显示 “No plugins found”
+
+请完全退出并重新打开 **ChatGPT 桌面端**，再进入 **Plugins → Personal**。不要在 `http://127.0.0.1:8765/gpt-continuum.html` 本地预览页测试发送；该页面没有 ChatGPT 消息桥接，只用于查看界面。如果 Personal 仍为空，请重新执行上面的 `npx` 命令，安装器会更新 `~/.agents/plugins/marketplace.json`。
+
 ## 目录结构
 
 ```text

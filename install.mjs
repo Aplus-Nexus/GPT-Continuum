@@ -10,9 +10,10 @@ const marketplaceName = "gpt-continuum";
 const pluginEntry = {
   name: "gpt-continuum",
   source: {
-    source: "git-subdir",
+    // The plugin lives at the repository root, so use the root-repository
+    // source type. `git-subdir` is only for plugins nested under a folder.
+    source: "url",
     url: "https://github.com/JulianRyder01/GPT-Continuum.git",
-    path: "./",
     ref: "main",
   },
   policy: {
@@ -46,4 +47,5 @@ marketplace.plugins.push(pluginEntry);
 mkdirSync(marketplaceRoot, { recursive: true });
 writeFileSync(marketplacePath, `${JSON.stringify(marketplace, null, 2)}\n`);
 console.log(`GPT Continuum added to ${marketplacePath}`);
-console.log("Restart ChatGPT desktop, then open Plugins → Personal and install it.");
+console.log("Fully quit and reopen ChatGPT desktop, then open Plugins → Personal and install it.");
+console.log("If Personal is empty, make sure you are using the desktop app, not the local preview page.");

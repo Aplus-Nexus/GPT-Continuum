@@ -50,6 +50,10 @@ npm start
 
 このプロジェクトはローカル `stdio` を使用するため、ユーザーが HTTPS をデプロイする必要はありません。公開 Plugin Directory でローカル MCP を配布する場合は Desktop only と追加審査の要件があります。
 
+### “No plugins found” と表示される場合
+
+**ChatGPT デスクトップアプリ**を完全に終了して再起動し、もう一度 **Plugins → Personal** を開いてください。`http://127.0.0.1:8765/gpt-continuum.html` のローカルプレビューでは送信をテストしないでください。このページには ChatGPT のメッセージブリッジがなく、画面確認専用です。Personal が空のままなら、上の `npx` コマンドを再実行してください。インストーラーが `~/.agents/plugins/marketplace.json` を更新します。
+
 ## ディレクトリ構成
 
 ```text
