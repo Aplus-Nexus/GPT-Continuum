@@ -1,0 +1,20 @@
+{
+  "name": "gpt-continuum-marketplace",
+  "interface": {
+    "displayName": "GPT Continuum"
+  },
+  "plugins": [
+    {
+      "name": "gpt-continuum",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

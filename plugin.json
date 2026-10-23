@@ -1,0 +1,30 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "gpt-continuum",
+  "version": "0.1.0",
+  "description": "Keep a ChatGPT conversation moving by sending a configurable follow-up message on a timer.",
+  "author": {
+    "name": "GPT Continuum contributors"
+  },
+  "homepage": "https://github.com/JulianRyder01/GPT-Continuum",
+  "repository": "https://github.com/JulianRyder01/GPT-Continuum",
+  "license": "MIT",
+  "keywords": ["chatgpt", "automation", "continue", "productivity"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "GPT Continuum",
+        "shortDescription": "Automatically continue a ChatGPT task.",
+        "longDescription": "Start a visible timer that sends a configurable follow-up message to the current ChatGPT conversation. No credentials, conversation scraping, or external data storage.",
+        "developerName": "GPT Continuum contributors",
+        "category": "Productivity",
+        "defaultPrompt": [
+          "Open GPT Continuum and send a continue message every 60 seconds."
+        ],
+        "brandColor": "#10A37F",
+        "logo": "./assets/logo.png",
+        "composerIcon": "./assets/logo.png"
+      }
+    }
+  }
+}

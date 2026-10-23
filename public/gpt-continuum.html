@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GPT Continuum</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --bg: #f7f7f8;
+        --panel: #ffffff;
+        --text: #202123;
+        --muted: #6b6b6f;
+        --line: #e5e5e7;
+        --accent: #10a37f;
+        --accent-dark: #0d8f6f;
+        --danger: #c0392b;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #212121; --panel: #2f2f2f; --text: #f7f7f8; --muted: #b5b5b5; --line: #4a4a4a; }
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 14px; background: var(--bg); color: var(--text); }
+      main { max-width: 480px; margin: 0 auto; padding: 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; }
+      .eyebrow { margin: 0 0 4px; color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+      h1 { margin: 0; font-size: 22px; letter-spacing: -.02em; }
+      .intro { margin: 7px 0 18px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+      label { display: block; margin: 13px 0 6px; font-size: 13px; font-weight: 650; }
+      textarea, input, select { width: 100%; border: 1px solid var(--line); border-radius: 11px; background: transparent; color: var(--text); font: inherit; padding: 10px 11px; outline: none; }
+      textarea { min-height: 72px; resize: vertical; line-height: 1.45; }
+      textarea:focus, input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .hint { margin: 6px 0 0; color: var(--muted); font-size: 12px; line-height: 1.4; }
+      .actions { display: flex; gap: 8px; margin-top: 17px; }
+      button { flex: 1; border: 0; border-radius: 11px; padding: 11px 12px; color: white; background: var(--accent); font: inherit; font-weight: 700; cursor: pointer; }
+      button:hover { background: var(--accent-dark); }
+      button.secondary { color: var(--text); background: transparent; border: 1px solid var(--line); }
+      button.secondary:hover { background: color-mix(in srgb, var(--line) 35%, transparent); }
+      button:disabled { cursor: not-allowed; opacity: .5; }
+      .status { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding: 10px 11px; border-radius: 11px; background: color-mix(in srgb, var(--accent) 10%, transparent); font-size: 13px; }
+      .status strong { font-variant-numeric: tabular-nums; }
+      .error { color: var(--danger); }
+      .footer { margin-top: 13px; color: var(--muted); font-size: 11px; line-height: 1.4; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">ChatGPT plugin</p>
+      <h1>GPT Continuum</h1>
+      <p class="intro">让当前对话按间隔自动收到“继续”消息。点击开始后，插件只会向当前会话发送你写下的文本。</p>
+
+      <label for="language">语言模板</label>
+      <select id="language">
+        <option value="zh">中文</option>
+        <option value="en">English</option>
+        <option value="custom">自定义</option>
+      </select>
+
+      <label for="message">发送内容</label>
+      <textarea id="message">继续，如果已完成请你忽略本条信息</textarea>
+      <p class="hint">建议保留“如果已完成请你忽略”这句，避免任务完成后模型重复工作。</p>
+
+      <div class="grid">
+        <div>
+          <label for="interval">间隔（秒）</label>
+          <input id="interval" type="number" min="5" max="86400" value="60" />
+        </div>
+        <div>
+          <label for="maxAttempts">最多次数</label>
+          <input id="maxAttempts" type="number" min="0" max="9999" value="0" />
+          <p class="hint">0 = 一直运行</p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="start">开始自动继续</button>
+        <button id="stop" class="secondary" disabled>停止</button>
+        <button id="once" class="secondary">只发送一次</button>
+      </div>
+
+      <div class="status" aria-live="polite">
+        <span id="statusText">准备就绪</span>
+        <strong id="count">0 次</strong>
+      </div>
+      <p class="footer">定时器运行在插件面板中。关闭面板或点击停止会结束定时器；插件不读取对话内容，也不保存账号信息。</p>
+    </main>
+
+    <script>
+      const messages = {
+        zh: "继续，如果已完成请你忽略本条信息",
+        en: "Continue. If the task is already complete, please ignore this message."
+      };
+      const languageEl = document.querySelector("#language");
+      const messageEl = document.querySelector("#message");
+      const intervalEl = document.querySelector("#interval");
+      const maxAttemptsEl = document.querySelector("#maxAttempts");
+      const startEl = document.querySelector("#start");
+      const stopEl = document.querySelector("#stop");
+      const onceEl = document.querySelector("#once");
+      const statusEl = document.querySelector("#statusText");
+      const countEl = document.querySelector("#count");
+
+      let running = false;
+      let sending = false;
+      let count = 0;
+      let timer = null;
+      let countdownTimer = null;
+      let bridgeReady = null;
+      let requestId = 0;
+      const pending = new Map();
+
+      function setStatus(text, isError = false) {
+        statusEl.textContent = text;
+        statusEl.classList.toggle("error", isError);
+      }
+
+      function updateCount() {
+        countEl.textContent = `${count} 次`;
+      }
+
+      function notify(method, params) {
+        window.parent.postMessage({ jsonrpc: "2.0", method, params }, "*");
+      }
+
+      function request(method, params) {
+        return new Promise((resolve, reject) => {
+          const id = ++requestId;
+          pending.set(id, { resolve, reject });
+          window.parent.postMessage({ jsonrpc: "2.0", id, method, params }, "*");
+        });
+      }
+
+      window.addEventListener("message", (event) => {
+        if (event.source !== window.parent || !event.data || event.data.jsonrpc !== "2.0") return;
+        const message = event.data;
+        if (typeof message.id !== "number") return;
+        const pendingRequest = pending.get(message.id);
+        if (!pendingRequest) return;
+        pending.delete(message.id);
+        if (message.error) pendingRequest.reject(message.error);
+        else pendingRequest.resolve(message.result);
+      }, { passive: true });
+
+      bridgeReady = (async () => {
+        if (typeof window.openai?.sendFollowUpMessage === "function") return;
+        await request("ui/initialize", {
+          appInfo: { name: "gpt-continuum", version: "0.1.0" },
+          appCapabilities: {},
+          protocolVersion: "2026-01-26"
+        });
+        notify("ui/notifications/initialized", {});
+      })().catch((error) => {
+        console.error("MCP Apps bridge initialization failed", error);
+        throw error;
+      });
+
+      async function sendFollowUp(text) {
+        await bridgeReady;
+        if (typeof window.openai?.sendFollowUpMessage === "function") {
+          return window.openai.sendFollowUpMessage({ prompt: text, scrollToBottom: false });
+        }
+        notify("ui/message", {
+          role: "user",
+          content: [{ type: "text", text }],
+          _meta: { "openai/message": { target: "active", send: true } }
+        });
+      }
+
+      async function sendOnce() {
+        if (sending) return false;
+        const text = messageEl.value.trim();
+        if (!text) { setStatus("请先填写发送内容", true); return false; }
+        sending = true;
+        onceEl.disabled = true;
+        try {
+          await sendFollowUp(text);
+          count += 1;
+          updateCount();
+          setStatus(running ? "已发送，等待下一次" : "已发送一次");
+          if (running && Number(maxAttemptsEl.value) > 0 && count >= Number(maxAttemptsEl.value)) stop();
+          return true;
+        } catch (error) {
+          console.error("Follow-up message failed", error);
+          setStatus("发送失败，请检查当前 ChatGPT 版本或插件权限", true);
+          if (running) stop();
+          return false;
+        } finally {
+          sending = false;
+          onceEl.disabled = false;
+        }
+      }
+
+      function clearTimers() {
+        if (timer) clearTimeout(timer);
+        if (countdownTimer) clearInterval(countdownTimer);
+        timer = null;
+        countdownTimer = null;
+      }
+
+      function scheduleNext() {
+        clearTimers();
+        if (!running) return;
+        const seconds = Math.max(5, Math.min(86400, Number(intervalEl.value) || 60));
+        let remaining = seconds;
+        setStatus(`下一次发送还有 ${remaining} 秒`);
+        countdownTimer = setInterval(() => {
+          remaining -= 1;
+          if (remaining > 0) setStatus(`下一次发送还有 ${remaining} 秒`);
+        }, 1000);
+        timer = setTimeout(async () => {
+          clearTimers();
+          await sendOnce();
+          scheduleNext();
+        }, seconds * 1000);
+      }
+
+      async function start() {
+        if (running) return;
+        const interval = Number(intervalEl.value);
+        const maxAttempts = Number(maxAttemptsEl.value);
+        if (!Number.isFinite(interval) || interval < 5) { setStatus("间隔至少为 5 秒", true); return; }
+        if (!Number.isInteger(maxAttempts) || maxAttempts < 0) { setStatus("最多次数必须是 0 或正整数", true); return; }
+        running = true;
+        count = 0;
+        updateCount();
+        startEl.disabled = true;
+        stopEl.disabled = false;
+        intervalEl.disabled = true;
+        maxAttemptsEl.disabled = true;
+        languageEl.disabled = true;
+        messageEl.disabled = true;
+        try { await window.openai?.requestDisplayMode?.({ mode: "pip" }); } catch (_) { /* optional host feature */ }
+        await sendOnce();
+        if (running) scheduleNext();
+      }
+
+      function stop() {
+        running = false;
+        clearTimers();
+        startEl.disabled = false;
+        stopEl.disabled = true;
+        intervalEl.disabled = false;
+        maxAttemptsEl.disabled = false;
+        languageEl.disabled = false;
+        messageEl.disabled = false;
+        setStatus(count ? "已停止" : "准备就绪");
+      }
+
+      languageEl.addEventListener("change", () => {
+        if (messages[languageEl.value]) messageEl.value = messages[languageEl.value];
+      });
+      startEl.addEventListener("click", start);
+      stopEl.addEventListener("click", stop);
+      onceEl.addEventListener("click", sendOnce);
+    </script>
+  </body>
+</html>

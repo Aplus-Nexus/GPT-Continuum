@@ -1,0 +1,20 @@
+{
+  "name": "gpt-continuum",
+  "version": "0.1.0",
+  "description": "A tiny ChatGPT plugin that sends a configurable follow-up message on a timer.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "gpt-continuum": "server.mjs",
+    "gpt-continuum-install": "install.mjs"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check server.mjs && node --check install.mjs && node scripts/check-files.mjs",
+    "test": "npm run check"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "^1.0.1",
+    "@modelcontextprotocol/sdk": "^1.20.2"
+  }
+}
