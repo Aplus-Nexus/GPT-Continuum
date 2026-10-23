@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "GPT Continuum — Multi-Chat",
+  "version": "0.2.0",
+  "description": "Keep multiple ChatGPT conversations moving by sending a continue message to selected tabs.",
+  "permissions": ["tabs", "storage"],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*"
+  ],
+  "action": {
+    "default_title": "GPT Continuum",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "128": "logo.png"
+  }
+}

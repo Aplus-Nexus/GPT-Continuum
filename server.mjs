@@ -12,13 +12,13 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
-const WIDGET_URI = "ui://gpt-continuum/widget.html";
+const WIDGET_URI = "ui://gpt-continuum/widget-v2.html";
 const widgetHtml = readFileSync(join(ROOT, "public", "gpt-continuum.html"), "utf8");
 
 function createAppServer() {
   const server = new McpServer({
     name: "gpt-continuum",
-    version: "0.1.0",
+    version: "0.2.0",
   });
 
   registerAppResource(
@@ -40,7 +40,9 @@ function createAppServer() {
             "openai/widgetDescription":
               "A small timer that sends a user-configured follow-up message to the current conversation.",
             "openai/ui": {
-              availableDisplayModes: ["inline", "pip", "fullscreen"],
+              // ChatGPT supports inline and fullscreen for MCP Apps. PiP is
+              // not a supported display mode in the current desktop host.
+              availableDisplayModes: ["inline", "fullscreen"],
             },
           },
         },

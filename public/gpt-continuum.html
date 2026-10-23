@@ -151,7 +151,7 @@
       bridgeReady = (async () => {
         if (typeof window.openai?.sendFollowUpMessage === "function") return;
         await request("ui/initialize", {
-          appInfo: { name: "gpt-continuum", version: "0.1.0" },
+          appInfo: { name: "gpt-continuum", version: "0.2.0" },
           appCapabilities: {},
           protocolVersion: "2026-01-26"
         });
@@ -240,7 +240,7 @@
         maxAttemptsEl.disabled = true;
         languageEl.disabled = true;
         messageEl.disabled = true;
-        try { await window.openai?.requestDisplayMode?.({ mode: "pip" }); } catch (_) { /* optional host feature */ }
+        try { await window.openai?.requestDisplayMode?.({ mode: "fullscreen" }); } catch (_) { /* optional host feature */ }
         await sendOnce();
         if (running) scheduleNext();
       }

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GPT Continuum</title>
+    <style>
+      :root { color-scheme: light dark; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      body { width: 360px; margin: 0; padding: 16px; color: #202123; background: #f7f7f8; }
+      @media (prefers-color-scheme: dark) { body { color: #f7f7f8; background: #212121; } }
+      h1 { margin: 0; font-size: 18px; }
+      p { margin: 5px 0 12px; color: #6b6b6f; font-size: 12px; line-height: 1.4; }
+      textarea, input { width: 100%; box-sizing: border-box; border: 1px solid #d7d7da; border-radius: 9px; padding: 9px; font: inherit; color: inherit; background: transparent; }
+      textarea { min-height: 58px; resize: vertical; }
+      label { display: block; margin: 10px 0 5px; font-size: 12px; font-weight: 700; }
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .tabs { max-height: 180px; overflow: auto; margin: 12px 0; border: 1px solid #d7d7da; border-radius: 9px; }
+      .tab { display: flex; gap: 8px; align-items: flex-start; padding: 8px; border-bottom: 1px solid #e5e5e7; font-size: 12px; }
+      .tab:last-child { border-bottom: 0; }
+      .tab-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .tab-state { color: #10a37f; font-size: 11px; }
+      button { border: 0; border-radius: 9px; padding: 9px 10px; font: inherit; font-weight: 700; cursor: pointer; }
+      button.primary { color: #fff; background: #10a37f; }
+      button.secondary { color: inherit; background: transparent; border: 1px solid #d7d7da; }
+      .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .toolbar { display: flex; gap: 6px; margin-top: 8px; }
+      .toolbar button { flex: 1; font-size: 11px; padding: 7px; }
+      #status { min-height: 16px; margin: 10px 0 0; color: #10a37f; }
+      .empty { padding: 14px; color: #6b6b6f; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <h1>GPT Continuum · 多会话</h1>
+    <p>选择多个 ChatGPT 标签页，优先点击 Steer；没有 Steer 时点击发送。</p>
+    <label for="message">发送内容</label>
+    <textarea id="message">继续，如果已完成请你忽略本条信息</textarea>
+    <div class="grid">
+      <div><label for="interval">间隔（秒）</label><input id="interval" type="number" min="5" value="60" /></div>
+      <div><label for="maxAttempts">最多次数（0=一直）</label><input id="maxAttempts" type="number" min="0" value="0" /></div>
+    </div>
+    <div class="toolbar">
+      <button id="refresh" class="secondary">刷新标签页</button>
+      <button id="selectAll" class="secondary">全选 / 取消全选</button>
+    </div>
+    <div id="tabs" class="tabs"></div>
+    <div class="actions">
+      <button id="start" class="primary">开始选中对话</button>
+      <button id="stop" class="secondary">停止选中对话</button>
+    </div>
+    <p id="status"></p>
+    <script src="popup.js"></script>
+  </body>
+</html>

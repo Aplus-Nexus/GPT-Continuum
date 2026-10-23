@@ -7,9 +7,8 @@
     {
       "name": "gpt-continuum",
       "source": {
-        "source": "git-subdir",
+        "source": "url",
         "url": "https://github.com/JulianRyder01/GPT-Continuum.git",
-        "path": "./",
         "ref": "main"
       },
       "policy": {
