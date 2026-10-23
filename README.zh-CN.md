@@ -41,6 +41,10 @@ npx --yes github:JulianRyder01/GPT-Continuum install
 
 插件模式遵循 ChatGPT 官方桥接，只能向打开插件的当前对话发送消息，不能选择其他已有对话。
 
+### Codex 桌面多会话模式
+
+在 Codex Desktop 中安装并打开 GPT Continuum 后，面板会显示 **Codex 桌面多页面**。点击“加载 Codex 页面”，选择多个线程，再点击“开始多页面继续”。运行中的线程使用 Steer，空闲线程使用 Codex 队列，消息会直接进入选中的 Codex 页面，而不是发给插件所在页面。该模式使用本机 Codex app-server，不需要 API Key 或 HTTPS。
+
 ## 开发
 
 ```bash

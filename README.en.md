@@ -41,6 +41,10 @@ Restart the ChatGPT desktop app, open **Plugins → Personal**, and install **GP
 
 The plugin mode follows ChatGPT's official bridge and can send only to the conversation that opened the plugin. It cannot select another existing conversation.
 
+### Codex desktop multi-thread mode
+
+Install and open GPT Continuum in Codex Desktop. The widget shows **Codex desktop multi-thread**; choose **Load Codex pages**, select several threads, and click **Start multi-thread continuation**. Active threads use Steer and idle threads use the Codex queue, so messages go to the selected Codex pages instead of the page that opened the widget. This uses the local Codex app-server and needs no API key or HTTPS deployment.
+
 ## Development
 
 ```bash

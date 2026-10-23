@@ -41,7 +41,20 @@
       .status { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding: 10px 11px; border-radius: 11px; background: color-mix(in srgb, var(--accent) 10%, transparent); font-size: 13px; }
       .status strong { font-variant-numeric: tabular-nums; }
       .error { color: var(--danger); }
+      .codex-panel { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+      .codex-panel h2 { margin: 0; font-size: 16px; }
+      .codex-panel .hint { margin-bottom: 10px; }
+      .thread-list { max-height: 240px; overflow: auto; border: 1px solid var(--line); border-radius: 11px; }
+      .thread-row { display: flex; gap: 8px; align-items: flex-start; padding: 9px 10px; border-bottom: 1px solid var(--line); font-size: 12px; }
+      .thread-row:last-child { border-bottom: 0; }
+      .thread-row input { width: auto; margin-top: 2px; }
+      .thread-copy { min-width: 0; }
+      .thread-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+      .thread-meta { margin-top: 2px; color: var(--muted); line-height: 1.35; }
+      .codex-actions { display: flex; gap: 8px; margin-top: 10px; }
+      .codex-actions button { font-size: 12px; padding: 9px 10px; }
       .footer { margin-top: 13px; color: var(--muted); font-size: 11px; line-height: 1.4; }
+      [hidden] { display: none !important; }
     </style>
   </head>
   <body>
@@ -83,6 +96,22 @@
         <span id="statusText">准备就绪</span>
         <strong id="count">0 次</strong>
       </div>
+      <section id="codexPanel" class="codex-panel" hidden>
+        <h2>Codex 桌面多页面</h2>
+        <p class="hint">选择多个 Codex 页面。运行中的页面使用 Steer，空闲页面使用队列继续。</p>
+        <div id="codexThreads" class="thread-list">
+          <div class="hint" style="padding: 12px">点击“加载 Codex 页面”。</div>
+        </div>
+        <div class="codex-actions">
+          <button id="codexRefresh" class="secondary">加载 Codex 页面</button>
+          <button id="codexSelectAll" class="secondary">全选 / 取消全选</button>
+        </div>
+        <div class="codex-actions">
+          <button id="codexStart">开始多页面继续</button>
+          <button id="codexStop" class="secondary">停止选中页面</button>
+        </div>
+        <p id="codexStatus" class="hint" aria-live="polite"></p>
+      </section>
       <p class="footer">定时器运行在插件面板中。关闭面板或点击停止会结束定时器；插件不读取对话内容，也不保存账号信息。</p>
     </main>
 
@@ -100,6 +129,11 @@
       const onceEl = document.querySelector("#once");
       const statusEl = document.querySelector("#statusText");
       const countEl = document.querySelector("#count");
+      const codexPanelEl = document.querySelector("#codexPanel");
+      const codexThreadsEl = document.querySelector("#codexThreads");
+      const codexStatusEl = document.querySelector("#codexStatus");
+      const codexSelected = new Set();
+      let codexThreads = [];
 
       let running = false;
       let sending = false;
@@ -124,13 +158,13 @@
         window.parent.postMessage({ jsonrpc: "2.0", method, params }, "*");
       }
 
-      function request(method, params) {
+      function request(method, params, timeoutMs = 15000) {
         return new Promise((resolve, reject) => {
           const id = ++requestId;
           const timeout = setTimeout(() => {
             pending.delete(id);
             reject(new Error("ChatGPT plugin bridge is unavailable"));
-          }, 3000);
+          }, timeoutMs);
           pending.set(id, { resolve, reject, timeout });
           window.parent.postMessage({ jsonrpc: "2.0", id, method, params }, "*");
         });
@@ -151,7 +185,7 @@
       bridgeReady = (async () => {
         if (typeof window.openai?.sendFollowUpMessage === "function") return;
         await request("ui/initialize", {
-          appInfo: { name: "gpt-continuum", version: "0.2.0" },
+          appInfo: { name: "gpt-continuum", version: "0.3.0" },
           appCapabilities: {},
           protocolVersion: "2026-01-26"
         });
@@ -171,6 +205,98 @@
           content: [{ type: "text", text }],
           _meta: { "openai/message": { target: "active", send: true } }
         });
+      }
+
+      async function callHostTool(name, args = {}) {
+        if (typeof window.openai?.callTool === "function") return window.openai.callTool(name, args);
+        await bridgeReady;
+        return request("tools/call", { name, arguments: args });
+      }
+
+      function toolData(result, fallback = {}) {
+        if (result?.structuredContent) return result.structuredContent;
+        const text = result?.content?.find((item) => item.type === "text")?.text;
+        if (!text) return fallback;
+        try { return JSON.parse(text); } catch (_) { return fallback; }
+      }
+
+      function setCodexStatus(text, isError = false) {
+        codexStatusEl.textContent = text;
+        codexStatusEl.classList.toggle("error", isError);
+      }
+
+      function renderCodexThreads() {
+        codexThreadsEl.textContent = "";
+        if (!codexThreads.length) {
+          const empty = document.createElement("div");
+          empty.className = "hint";
+          empty.style.padding = "12px";
+          empty.textContent = "没有找到可用的 Codex 页面。";
+          codexThreadsEl.appendChild(empty);
+          return;
+        }
+        for (const thread of codexThreads) {
+          const row = document.createElement("label");
+          row.className = "thread-row";
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = codexSelected.has(thread.id);
+          checkbox.addEventListener("change", () => {
+            if (checkbox.checked) codexSelected.add(thread.id);
+            else codexSelected.delete(thread.id);
+          });
+          const copy = document.createElement("div");
+          copy.className = "thread-copy";
+          const title = document.createElement("div");
+          title.className = "thread-title";
+          title.textContent = thread.name || thread.preview || thread.id;
+          const meta = document.createElement("div");
+          meta.className = "thread-meta";
+          meta.textContent = `${thread.status}${thread.cwd ? ` · ${thread.cwd}` : ""}`;
+          copy.append(title, meta);
+          row.append(checkbox, copy);
+          codexThreadsEl.appendChild(row);
+        }
+      }
+
+      async function loadCodexThreads() {
+        setCodexStatus("正在读取 Codex 页面…");
+        try {
+          const data = toolData(await callHostTool("codex_list_threads"), { threads: [] });
+          codexThreads = data.threads || [];
+          const ids = new Set(codexThreads.map((thread) => thread.id));
+          for (const id of codexSelected) if (!ids.has(id)) codexSelected.delete(id);
+          renderCodexThreads();
+          setCodexStatus(`已加载 ${codexThreads.length} 个 Codex 页面`);
+        } catch (error) {
+          setCodexStatus(`无法读取 Codex 页面：${error.message || error}`, true);
+        }
+      }
+
+      async function startCodexContinuum() {
+        const threadIds = [...codexSelected];
+        if (!threadIds.length) { setCodexStatus("请先选择至少一个 Codex 页面", true); return; }
+        try {
+          const data = toolData(await callHostTool("codex_start_continuum", {
+            threadIds,
+            message: messageEl.value.trim(),
+            intervalSeconds: Number(intervalEl.value) || 60,
+            maxAttempts: Number(maxAttemptsEl.value) || 0,
+          }), { jobs: [] });
+          setCodexStatus(`已启动 ${data.jobs?.length || threadIds.length} 个 Codex 页面`);
+        } catch (error) {
+          setCodexStatus(`启动失败：${error.message || error}`, true);
+        }
+      }
+
+      async function stopCodexContinuum() {
+        const threadIds = [...codexSelected];
+        try {
+          const data = toolData(await callHostTool("codex_stop_continuum", { threadIds }), { stopped: 0 });
+          setCodexStatus(`已停止 ${data.stopped || 0} 个 Codex 定时器`);
+        } catch (error) {
+          setCodexStatus(`停止失败：${error.message || error}`, true);
+        }
       }
 
       async function sendOnce() {
@@ -260,6 +386,18 @@
       languageEl.addEventListener("change", () => {
         if (messages[languageEl.value]) messageEl.value = messages[languageEl.value];
       });
+      if (hasHostBridge()) {
+        codexPanelEl.hidden = false;
+        document.querySelector("#codexRefresh").addEventListener("click", loadCodexThreads);
+        document.querySelector("#codexSelectAll").addEventListener("click", () => {
+          const allSelected = codexThreads.length > 0 && codexThreads.every((thread) => codexSelected.has(thread.id));
+          if (allSelected) codexSelected.clear();
+          else codexThreads.forEach((thread) => codexSelected.add(thread.id));
+          renderCodexThreads();
+        });
+        document.querySelector("#codexStart").addEventListener("click", startCodexContinuum);
+        document.querySelector("#codexStop").addEventListener("click", stopCodexContinuum);
+      }
       if (!hasHostBridge()) {
         setStatus("预览模式：请从 ChatGPT Plugins 中打开 GPT Continuum 后再发送", true);
         startEl.disabled = true;

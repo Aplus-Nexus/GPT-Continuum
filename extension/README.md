@@ -15,4 +15,4 @@ MCP 插件只能向“当前对话”发消息。这个浏览器扩展用于真�
 
 扩展只操作你已打开并选择的标签页，不读取聊天内容、不上传 Cookie，也不需要 OpenAI API Key。关闭标签页或点击停止即可结束对应定时器。
 
-这个模式运行在 ChatGPT 网页版的 Chrome/Edge 标签页中；ChatGPT 原生桌面客户端不允许插件访问其他对话的窗口。
+这个模式运行在 ChatGPT 网页版的 Chrome/Edge 标签页中。Codex Desktop 用户应直接使用插件内置的 **Codex 桌面多页面**模式；它通过本机 Codex app-server 选择并发送到多个 Codex 线程。
