@@ -6,7 +6,7 @@
       "command": "npx",
       "args": [
         "--yes",
-        "gpt-continuum@latest"
+        "github:JulianRyder01/GPT-Continuum"
       ]
     }
   }

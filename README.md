@@ -21,21 +21,15 @@
 
 ## Quick install
 
-维护者首次发布 npm 包：
-
-```bash
-npm publish --access public
-```
-
 用户只需安装 Node.js 20+，然后运行：
 
 ```bash
-npx --yes gpt-continuum@latest install
+npx --yes github:JulianRyder01/GPT-Continuum install
 ```
 
 重启 ChatGPT 桌面端，在 **Plugins → Personal** 搜索并安装 **GPT Continuum**。打开插件，设置消息和间隔，点击 **Start**。
 
-本项目使用本地 `stdio` MCP，因此不需要用户部署 HTTPS。公共 ChatGPT Plugin Directory 对本地 MCP 有 Desktop only 和额外审核限制；这也是本项目默认采用 GitHub + npm + 本地 marketplace 的原因。
+本项目使用本地 `stdio` MCP，因此不需要用户部署 HTTPS。公共 ChatGPT Plugin Directory 对本地 MCP 有 Desktop only 和额外审核限制；这也是本项目默认采用 GitHub + 本地 marketplace 的原因。
 
 ## Development
 

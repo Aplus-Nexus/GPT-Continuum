@@ -18,16 +18,10 @@ GPT Continuum は、現在の ChatGPT 会話へ設定した follow-up message �
 
 ## インストール
 
-メンテナーは最初に一度だけ npm パッケージを公開します。
-
-```bash
-npm publish --access public
-```
-
 ユーザーは Node.js 20 以上をインストールして、次を実行します。
 
 ```bash
-npx --yes gpt-continuum@latest install
+npx --yes github:JulianRyder01/GPT-Continuum install
 ```
 
 ChatGPT デスクトップアプリを再起動し、**Plugins → Personal** から **GPT Continuum** を検索してインストールします。新しい会話でプラグインを開き、メッセージと間隔を設定して **Start** を押してください。

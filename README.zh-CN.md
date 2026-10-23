@@ -18,16 +18,10 @@ GPT Continuum 是一个本地运行的 ChatGPT Plugin / MCP App。它会按设�
 
 ## 安装
 
-维护者首次发布 npm 包：
-
-```bash
-npm publish --access public
-```
-
 用户安装 Node.js 20+ 后执行：
 
 ```bash
-npx --yes gpt-continuum@latest install
+npx --yes github:JulianRyder01/GPT-Continuum install
 ```
 
 重启 ChatGPT 桌面端，打开 **Plugins → Personal**，搜索并安装 **GPT Continuum**。在新对话中打开插件，填写消息和间隔，然后点击 **Start**。

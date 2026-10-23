@@ -10,9 +10,10 @@ const marketplaceName = "gpt-continuum";
 const pluginEntry = {
   name: "gpt-continuum",
   source: {
-    source: "npm",
-    package: "gpt-continuum",
-    version: "^0.1.0",
+    source: "git-subdir",
+    url: "https://github.com/JulianRyder01/GPT-Continuum.git",
+    path: "./",
+    ref: "main",
   },
   policy: {
     installation: "AVAILABLE",

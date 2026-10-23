@@ -7,8 +7,10 @@
     {
       "name": "gpt-continuum",
       "source": {
-        "source": "local",
-        "path": "./"
+        "source": "git-subdir",
+        "url": "https://github.com/JulianRyder01/GPT-Continuum.git",
+        "path": "./",
+        "ref": "main"
       },
       "policy": {
         "installation": "AVAILABLE",

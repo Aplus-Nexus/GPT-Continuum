@@ -11,7 +11,7 @@ if (manifest.name !== "gpt-continuum") throw new Error("plugin.json has an unexp
 const mcpServer = mcp.mcpServers?.["gpt-continuum"];
 if (mcpServer?.type !== "stdio") throw new Error("mcp.json must use stdio");
 if (mcpServer?.command !== "npx") throw new Error("mcp.json must launch with npx");
-if (mcpServer?.args?.[1] !== "gpt-continuum@latest") throw new Error("mcp.json must launch the published package");
+if (mcpServer?.args?.[1] !== "github:JulianRyder01/GPT-Continuum") throw new Error("mcp.json must launch the GitHub package");
 if (!installer.includes(".agents") || !installer.includes("gpt-continuum")) throw new Error("Installer is incomplete");
 if (!marketplace.plugins?.some((plugin) => plugin.name === "gpt-continuum")) throw new Error("Marketplace entry missing");
 for (const marker of ["sendFollowUpMessage", "继续，如果已完成请你忽略本条信息", "id=\"start\""]) {
