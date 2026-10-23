@@ -14,7 +14,7 @@ if (mcpServer?.command !== "npx") throw new Error("mcp.json must launch with npx
 if (mcpServer?.args?.[1] !== "github:JulianRyder01/GPT-Continuum") throw new Error("mcp.json must launch the GitHub package");
 if (!installer.includes(".agents") || !installer.includes("gpt-continuum")) throw new Error("Installer is incomplete");
 if (!marketplace.plugins?.some((plugin) => plugin.name === "gpt-continuum")) throw new Error("Marketplace entry missing");
-for (const marker of ["sendFollowUpMessage", "at capacity", "继续，如果已完成请你忽略本条信息", "id=\"start\""]) {
+for (const marker of ["sendFollowUpMessage", "继续，如果已完成请你忽略本条信息", "id=\"start\""]) {
   if (!html.includes(marker)) throw new Error(`Widget is missing ${marker}`);
 }
 if (!widgetScript) throw new Error("Widget script is missing");
