@@ -48,7 +48,7 @@
     <main>
       <p class="eyebrow">ChatGPT plugin</p>
       <h1>GPT Continuum</h1>
-      <p class="intro">让当前对话按间隔自动收到“继续”消息。点击开始后，插件只会向当前会话发送你写下的文本。</p>
+      <p class="intro">GPT 总是显示 “at capacity” 或中途停住？请从 ChatGPT Plugins 打开本插件，再按间隔向当前会话发送“继续”消息。</p>
 
       <label for="language">语言模板</label>
       <select id="language">
@@ -109,6 +109,7 @@
       let bridgeReady = null;
       let requestId = 0;
       const pending = new Map();
+      const hasHostBridge = () => typeof window.openai?.sendFollowUpMessage === "function" || window.parent !== window;
 
       function setStatus(text, isError = false) {
         statusEl.textContent = text;
@@ -126,7 +127,11 @@
       function request(method, params) {
         return new Promise((resolve, reject) => {
           const id = ++requestId;
-          pending.set(id, { resolve, reject });
+          const timeout = setTimeout(() => {
+            pending.delete(id);
+            reject(new Error("ChatGPT plugin bridge is unavailable"));
+          }, 3000);
+          pending.set(id, { resolve, reject, timeout });
           window.parent.postMessage({ jsonrpc: "2.0", id, method, params }, "*");
         });
       }
@@ -138,6 +143,7 @@
         const pendingRequest = pending.get(message.id);
         if (!pendingRequest) return;
         pending.delete(message.id);
+        clearTimeout(pendingRequest.timeout);
         if (message.error) pendingRequest.reject(message.error);
         else pendingRequest.resolve(message.result);
       }, { passive: true });
@@ -169,6 +175,10 @@
 
       async function sendOnce() {
         if (sending) return false;
+        if (!hasHostBridge()) {
+          setStatus("预览模式：请从 ChatGPT Plugins 中打开 GPT Continuum 后再发送", true);
+          return false;
+        }
         const text = messageEl.value.trim();
         if (!text) { setStatus("请先填写发送内容", true); return false; }
         sending = true;
@@ -250,6 +260,11 @@
       languageEl.addEventListener("change", () => {
         if (messages[languageEl.value]) messageEl.value = messages[languageEl.value];
       });
+      if (!hasHostBridge()) {
+        setStatus("预览模式：请从 ChatGPT Plugins 中打开 GPT Continuum 后再发送", true);
+        startEl.disabled = true;
+        onceEl.disabled = true;
+      }
       startEl.addEventListener("click", start);
       stopEl.addEventListener("click", stop);
       onceEl.addEventListener("click", sendOnce);

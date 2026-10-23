@@ -2,9 +2,15 @@
 
 <p align="center"><img src="assets/logo.png" alt="GPT Continuum logo" width="180" /></p>
 
-<p align="center"><strong>作業が終わるまで、ChatGPT を前に進め続けます。</strong></p>
+<p align="center"><strong>GPT を「at capacity」で止めない。</strong></p>
 
-GPT Continuum は、現在の ChatGPT 会話へ設定した follow-up message を一定間隔で送るローカル ChatGPT Plugin / MCP App です。容量制限、一時的な中断、モデルの早期停止から長いタスクを再開するために使えます。
+GPT が「at capacity」と表示され、長いタスクが途中で止まり、公式クライアントも自動再試行してくれない？GPT Continuum は、現在の ChatGPT 会話へ設定した follow-up message を一定間隔で送るローカル ChatGPT Plugin / MCP App です。タスクをそのまま再開できます。
+
+## 解決する問題
+
+混雑時や長いコード生成では、ChatGPT が **at capacity**、一時停止、早期終了になることがあります。GPT Continuum は手動の「続けて」を、いつでも停止できる見えるタイマーに変えます。
+
+![GPT Continuum プラグインのスクリーンショット](assets/screenshot.png)
 
 ## 機能
 

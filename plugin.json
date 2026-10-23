@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "gpt-continuum",
   "version": "0.1.0",
-  "description": "Keep a ChatGPT conversation moving by sending a configurable follow-up message on a timer.",
+  "description": "Keep your GPT moving when ChatGPT says at capacity by sending a configurable follow-up message on a timer.",
   "author": {
     "name": "GPT Continuum contributors"
   },
@@ -14,8 +14,8 @@
     "com.openai": {
       "interface": {
         "displayName": "GPT Continuum",
-        "shortDescription": "Automatically continue a ChatGPT task.",
-        "longDescription": "Start a visible timer that sends a configurable follow-up message to the current ChatGPT conversation. No credentials, conversation scraping, or external data storage.",
+        "shortDescription": "Keep GPT moving past at-capacity interruptions.",
+        "longDescription": "When ChatGPT stops at capacity or pauses a long task, start a visible timer that sends a configurable follow-up message to the current conversation. No credentials, conversation scraping, or external data storage.",
         "developerName": "GPT Continuum contributors",
         "category": "Productivity",
         "defaultPrompt": [

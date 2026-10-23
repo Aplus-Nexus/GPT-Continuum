@@ -2,9 +2,15 @@
 
 <p align="center"><img src="assets/logo.png" alt="GPT Continuum logo" width="180" /></p>
 
-<p align="center"><strong>让 ChatGPT 一直推进，直到任务完成。</strong></p>
+<p align="center"><strong>让你的 GPT 不再停在 “at capacity”。</strong></p>
 
-GPT Continuum 是一个本地运行的 ChatGPT Plugin / MCP App。它会按设定间隔向当前对话发送 follow-up message，帮助长任务在容量限制、临时中断或模型停顿后继续运行。
+GPT 总是显示 “at capacity”，长任务停在半路，官方客户端又不会自动重试？GPT Continuum 是一个本地运行的 ChatGPT Plugin / MCP App。它会按设定间隔向当前对话发送 follow-up message，让任务接着运行。
+
+## 这个项目解决什么问题
+
+ChatGPT 在长任务、代码生成或高峰期可能因为 **at capacity**、临时中断或模型提前停下而卡住。GPT Continuum 把反复手动发送“继续”变成一个可见、可停止、可配置的定时器。
+
+![GPT Continuum 插件截图](assets/screenshot.png)
 
 ## 特性
 
